@@ -81,8 +81,9 @@ public class MetaConfigReader {
                         properties.load(inputStream);
                     }
                 } else {
-                    if(propertiesFileName.equals("extension.properties"))
-                    {return properties;}
+                    if(propertiesFileName.equals("extension.properties")) {
+                        return properties;
+                    }
                     else {
                         throw new IOException("Properties file not found: " + propertiesFileName);
                     }
