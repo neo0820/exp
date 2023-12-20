@@ -57,8 +57,14 @@ public class ExpApplicationListener implements ApplicationListener<ApplicationRe
                 ((GenericApplicationContext) context).setAllowBeanDefinitionOverriding(true);
             }
             objectStore = new ObjectStoreSpringboot(registry, beanFactory);
-            String pluginPath = event.getApplicationContext().getEnvironment().getProperty(Constant.PLUGINS_PATH_KEY, "exp-plugins");
-            String workDir = event.getApplicationContext().getEnvironment().getProperty(Constant.PLUGINS_WORK_DIE_PATH_KEY, "exp-workDir");
+            String pluginPath =
+                    event.getApplicationContext().getEnvironment().getProperty(Constant.KPAAS_FILESTORAGE_PATH_KEY, "config.file-storage.local-plus.base-path")
+            +
+                    event.getApplicationContext().getEnvironment().getProperty(Constant.PLUGINS_PATH_KEY, "exp-plugins");
+            String workDir =
+                    event.getApplicationContext().getEnvironment().getProperty(Constant.KPAAS_FILESTORAGE_PATH_KEY, "config.file-storage.local-plus.base-path")
+                            +
+                    event.getApplicationContext().getEnvironment().getProperty(Constant.PLUGINS_WORK_DIE_PATH_KEY, "exp-workDir");
             String extPluginAutoDelete = event.getApplicationContext().getEnvironment().getProperty(Constant.PLUGINS_AUTO_DELETE_KEY, "true");
 
             Bootstrap.bootstrap(objectStore, pluginPath, workDir, extPluginAutoDelete);

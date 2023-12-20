@@ -5,6 +5,7 @@ package cn.think.in.java.open.exp.client;
  **/
 public interface Constant {
 
+    String KPAAS_FILESTORAGE_PATH_KEY="config.file-storage.local-plus.base-path";
     String PLUGINS_PATH_KEY = "plugins_path";
     String PLUGINS_WORK_DIE_PATH_KEY = "plugins_work_dir";
     String PLUGINS_AUTO_DELETE_KEY = "plugins_auto_delete_enable";
