@@ -8,6 +8,7 @@ import cn.think.in.java.open.exp.client.StringUtil;
 import cn.think.in.java.open.exp.core.impl.Bootstrap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -15,8 +16,11 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author cxs
@@ -57,12 +61,21 @@ public class ExpApplicationListener implements ApplicationListener<ApplicationRe
                 ((GenericApplicationContext) context).setAllowBeanDefinitionOverriding(true);
             }
             objectStore = new ObjectStoreSpringboot(registry, beanFactory);
+
+            String basePath="";
+
+            if(event.getApplicationContext().getEnvironment().getProperty("config.file-storage.local-plus[0].base-path")!=null)
+            {
+                basePath=event.getApplicationContext().getEnvironment().getProperty("config.file-storage.local-plus[0].base-path");
+            }
+
+
             String pluginPath =
-                    event.getApplicationContext().getEnvironment().getProperty(Constant.KPAAS_FILESTORAGE_PATH_KEY, "config.file-storage.local-plus.base-path")
+                    basePath
             +
                     event.getApplicationContext().getEnvironment().getProperty(Constant.PLUGINS_PATH_KEY, "exp-plugins");
             String workDir =
-                    event.getApplicationContext().getEnvironment().getProperty(Constant.KPAAS_FILESTORAGE_PATH_KEY, "config.file-storage.local-plus.base-path")
+                    basePath
                             +
                     event.getApplicationContext().getEnvironment().getProperty(Constant.PLUGINS_WORK_DIE_PATH_KEY, "exp-workDir");
             String extPluginAutoDelete = event.getApplicationContext().getEnvironment().getProperty(Constant.PLUGINS_AUTO_DELETE_KEY, "true");

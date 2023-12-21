@@ -99,29 +99,29 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <!-- exp 插件辅助工具, 每次打包时, 都会将当前 jar 包上传到目标服务器,
-                  且: 如果目标服务器已经有了该插件, 则会卸载插件后再上传.
-                  -->
-                <groupId>cn.think.in.java</groupId>
-                <artifactId>auto-install-exp-maven-plugin</artifactId>
-                <version>1.0-SNAPSHOT</version>
-                <configuration>
-                    <jarName>${project.artifactId}-${project.version}.jar</jarName>
-                    <!-- 替换为你的 k8s 服务器地址 -->
-                    <uploadUrl>http://localhost:8888/uploadAndInstall</uploadUrl>
-                    <!-- 替换为你的 k8s 服务器地址 -->
-                    <uninstallUrl>http://localhost:8888/uninstall</uninstallUrl>
-                    <skipUpload>true</skipUpload>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>upload</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                &lt;!&ndash; exp 插件辅助工具, 每次打包时, 都会将当前 jar 包上传到目标服务器,-->
+<!--                  且: 如果目标服务器已经有了该插件, 则会卸载插件后再上传.-->
+<!--                  &ndash;&gt;-->
+<!--                <groupId>cn.think.in.java</groupId>-->
+<!--                <artifactId>auto-install-exp-maven-plugin</artifactId>-->
+<!--                <version>1.0-SNAPSHOT</version>-->
+<!--                <configuration>-->
+<!--                    <jarName>${project.artifactId}-${project.version}.jar</jarName>-->
+<!--                    &lt;!&ndash; 替换为你的 k8s 服务器地址 &ndash;&gt;-->
+<!--                    <uploadUrl>http://localhost:8888/uploadAndInstall</uploadUrl>-->
+<!--                    &lt;!&ndash; 替换为你的 k8s 服务器地址 &ndash;&gt;-->
+<!--                    <uninstallUrl>http://localhost:8888/uninstall</uninstallUrl>-->
+<!--                    <skipUpload>true</skipUpload>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>upload</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
 
         </plugins>
