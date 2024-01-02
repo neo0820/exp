@@ -2,7 +2,6 @@ package cn.think.in.java.open.exp.classloader.support;
 
 import cn.think.in.java.open.exp.client.ConfigSupport;
 import cn.think.in.java.open.exp.client.Constant;
-import cn.think.in.java.open.exp.client.StringUtil;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 
@@ -26,15 +25,15 @@ import java.util.jar.JarFile;
 public class MetaConfigReader {
 
     public static PluginMetaInnerModel getMeta(File file) {
-        try {
-            Properties properties = loadProperties(file.getAbsolutePath(), Constant.PLUGIN_META_FILE_NAME);
+        try (ConfigSupportClassLoader configSupportClassLoader = new ConfigSupportClassLoader(file)) {
+            Properties properties = loadProperties(file.getAbsolutePath(), Constant.PLUGIN_META_FILE_NAME, false);
             String code = properties.getProperty(Constant.PLUGIN_CODE_KEY);
             String desc = properties.getProperty(Constant.PLUGIN_DESC_KEY);
             String version = properties.getProperty(Constant.PLUGIN_VERSION_KEY);
             String ext = properties.getProperty(Constant.PLUGIN_EXT_KEY);
             String boot = properties.getProperty(Constant.PLUGIN_BOOT_CLASS);
             String mode = properties.getProperty(Constant.PLUGIN_CLASS_LOADER_MODE);
-            List<ConfigSupport> list = new ConfigSupportClassLoader(file).get();
+            List<ConfigSupport> list = configSupportClassLoader.get();
             return new PluginMetaInnerModel(code, desc, version, ext, boot, list, mode);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -42,7 +41,7 @@ public class MetaConfigReader {
     }
 
     public static Map<String, String> getMapping(File file) {
-        Properties properties = loadProperties(file.getAbsolutePath(), Constant.EXTENSION_FILE_NAME);
+        Properties properties = loadProperties(file.getAbsolutePath(), Constant.EXTENSION_FILE_NAME, true);
         Map<String, String> map = new HashMap<>();
 
         for (Map.Entry<Object, Object> i : properties.entrySet()) {
@@ -53,7 +52,7 @@ public class MetaConfigReader {
     }
 
 
-    private static Properties loadProperties(String file, String propertiesFileName) {
+    private static Properties loadProperties(String file, String propertiesFileName, boolean ignoreNotFound) {
         Properties properties = new Properties();
 
         if (file.endsWith(".jar")) {
@@ -64,7 +63,11 @@ public class MetaConfigReader {
                         properties.load(inputStream);
                     }
                 } else {
-                    throw new RuntimeException(file + " not found " + propertiesFileName);
+                    if (ignoreNotFound) {
+                        return properties;
+                    } else {
+                        throw new IOException("Properties file not found: " + propertiesFileName);
+                    }
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -81,10 +84,9 @@ public class MetaConfigReader {
                         properties.load(inputStream);
                     }
                 } else {
-                    if(propertiesFileName.equals("extension.properties")) {
+                    if (ignoreNotFound) {
                         return properties;
-                    }
-                    else {
+                    } else {
                         throw new IOException("Properties file not found: " + propertiesFileName);
                     }
                 }
