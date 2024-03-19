@@ -46,7 +46,7 @@ public class ExpAppContextImpl implements ExpAppContext {
     public Plugin load(File file) throws Throwable {
         PluginMetaFat fat = metaService.install(file);
         List<Class<?>> classes = fat.getScanner().scan();
-        objectStore.registerCallback(classes, fat.getPluginId());
+        getObjectStore().registerCallback(classes, fat.getPluginId());
         all.add(fat.getPluginId());
         PluginLifeCycleHookManager.addHook(fat.getPluginId());
         log.info("安装加载插件, 插件 ID = [{}], 配置={}", fat.getPluginId(), fat.getConfigSupportList());
@@ -55,7 +55,7 @@ public class ExpAppContextImpl implements ExpAppContext {
 
     @Override
     public void unload(String pluginId) throws Exception {
-        objectStore.unRegisterCallback(pluginId);
+        getObjectStore().unRegisterCallback(pluginId);
         metaService.unInstall(pluginId);
         all.remove(pluginId);
         PluginLifeCycleHookManager.removeHook(pluginId);
@@ -72,11 +72,11 @@ public class ExpAppContextImpl implements ExpAppContext {
             }
 
             if (filter == null) {
-                return (List<P>) classes.stream().map(c -> objectStore.getObject(c.getAClass(), c.getPluginId())).collect(Collectors.toList());
+                return (List<P>) classes.stream().map(c -> getObjectStore().getObject(c.getAClass(), c.getPluginId())).collect(Collectors.toList());
             }
 
             return filter.filter(classes.stream().map(c -> {
-                P bean = objectStore.getObject(c.getAClass(), c.getPluginId());
+                P bean = getObjectStore().getObject(c.getAClass(), c.getPluginId());
                 return new PluginFilter.FModel<>(bean, c.getPluginId());
             }).collect(Collectors.toList())).stream().map(PluginFilter.FModel::getT).collect(Collectors.toList());
         } catch (
@@ -97,7 +97,7 @@ public class ExpAppContextImpl implements ExpAppContext {
             if (classZ == null) {
                 return Optional.empty();
             }
-            return Optional.ofNullable(objectStore.getObject(classZ.getAClass(), classZ.getPluginId()));
+            return Optional.ofNullable(getObjectStore().getObject(classZ.getAClass(), classZ.getPluginId()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -124,5 +124,9 @@ public class ExpAppContextImpl implements ExpAppContext {
     public <R, P> R stream(Class<P> clazz, String pluginId, Ec<R, P> ec) {
         Optional<P> o = get(clazz.getName(), pluginId);
         return o.map(ec::run).orElse(null);
+    }
+
+    public ObjectStore getObjectStore() {
+        return objectStore;
     }
 }

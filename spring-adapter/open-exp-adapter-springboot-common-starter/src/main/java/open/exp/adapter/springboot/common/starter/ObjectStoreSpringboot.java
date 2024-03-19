@@ -39,7 +39,7 @@ public class ObjectStoreSpringboot implements ObjectStore {
         this.beanDefinitionRegistry = beanDefinitionRegistry;
         this.beanFactory = beanFactory;
         objectScans = SpiFactory.getList(ObjectScan.class);
-        Runtime.getRuntime().addShutdownHook(new GraceShutDownThread(() -> new HashMap<>(classesCache).keySet().forEach(this::unRegisterCallback)));
+        Runtime.getRuntime().addShutdownHook(new GraceShutDownThread(() -> new HashMap<>(getClassesCache()).keySet().forEach(this::unRegisterCallback)));
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ObjectStoreSpringboot implements ObjectStore {
 
         objectScans.forEach(e -> e.registerApis(classes, pluginId));
         postInit(pluginId, classes);
-        classesCache.put(pluginId, classes);
+        getClassesCache().put(pluginId, classes);
     }
 
     private void unRegisterCallbackAll(String pluginId, Exception ex, List<Class<?>> rollbackList) {
@@ -80,14 +80,14 @@ public class ObjectStoreSpringboot implements ObjectStore {
     @Override
     public void unRegisterCallback(String pluginId) {
 
-        List<Class<?>> classes = classesCache.get(pluginId);
+        List<Class<?>> classes = getClassesCache().get(pluginId);
         if (classes == null) {
             return;
         }
 
         postDestroy(pluginId, classes);
         objectScans.forEach(e -> e.unregisterApis(pluginId));
-        classesCache.remove(pluginId);
+        getClassesCache().remove(pluginId);
     }
 
 
@@ -138,6 +138,10 @@ public class ObjectStoreSpringboot implements ObjectStore {
             unRegisterCallback(aClass, pluginId);
             PluginLifeCycleHookManager.postDestroy(this, aClass, PluginNameBuilder.build(aClass, pluginId));
         }
+    }
+
+    public Map<String, List<Class<?>>> getClassesCache() {
+        return classesCache;
     }
 
     static class GraceShutDownThread extends Thread {
